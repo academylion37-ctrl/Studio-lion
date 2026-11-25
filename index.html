@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lion Studio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #ffffff;
+      color: #222222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Gateway Screen */
+    #login-screen {
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      background: #ffffff;
+      padding: 30px 20px;
+    }
+    .brand-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: #f59e0b;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .lion-logo {
+      font-size: 80px;
+      display: inline-block;
+      animation: bounceLion 1.6s infinite ease-in-out;
+      margin: 10px 0 20px;
+      user-select: none;
+    }
+    @keyframes bounceLion {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-16px); }
+    }
+    .hand-pointer {
+      font-size: 32px;
+      display: inline-block;
+      animation: pointDown 1s infinite ease-in-out;
+      margin-bottom: 5px;
+      user-select: none;
+    }
+    @keyframes pointDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(7px); }
+    }
+    .prompt-text {
+      font-size: 15px;
+      color: #555555;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+    .pass-input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 16px;
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      outline: none;
+      text-align: center;
+      margin-bottom: 14px;
+      background: #ffffff;
+      color: #111111;
+      transition: border-color 0.2s;
+    }
+    .pass-input:focus {
+      border-color: #d97706;
+    }
+    .enter-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+      background-color: #f59e0b;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .enter-btn:hover {
+      background-color: #d97706;
+    }
+    .error-msg {
+      color: #dc2626;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+    .whatsapp-box {
+      margin-top: 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #16a34a;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 10px 18px;
+      border: 1.5px solid #bbf7d0;
+      border-radius: 30px;
+      background: #f0fdf4;
+      transition: transform 0.2s;
+    }
+    .whatsapp-box:hover {
+      transform: scale(1.03);
+    }
+
+    /* App Container (User & Admin) */
+    .panel-container {
+      display: none;
+      width: 100%;
+      max-width: 720px;
+      background: #ffffff;
+      min-height: 90vh;
+      padding-bottom: 40px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 2px solid #f3f4f6;
+      margin-bottom: 20px;
+    }
+    .topbar h2 {
+      color: #f59e0b;
+      font-size: 24px;
+      font-weight: 800;
+    }
+    .logout-btn {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* User Panel Tabs */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      border: 2px solid #f59e0b;
+      background: #ffffff;
+      color: #f59e0b;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #f59e0b;
+      color: #ffffff;
+    }
+
+    /* Live Card */
+    .live-card {
+      border: 2px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 25px;
+      text-align: center;
+      background: #ffffff;
+    }
+    .live-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+    .live-on {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .live-off {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    .meet-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 24px;
+      background: #16a34a;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    /* Video Grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .video-card {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .video-thumb {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      background: #f3f4f6;
+    }
+    .video-info {
+      padding: 14px;
+    }
+    .video-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+    .watch-btn {
+      width: 100%;
+      padding: 10px;
+      background: #f59e0b;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Video Player Modal */
+    #player-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .player-box {
+      width: 100%;
+      max-width: 700px;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: right;
+    }
+    .close-player {
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .iframe-wrap {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #000;
+    }
+    .iframe-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    /* Admin Sections */
+    .admin-section {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 20px;
+      background: #ffffff;
+    }
+    .admin-section h3 {
+      font-size: 18px;
+      color: #111827;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 8px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #4b5563;
+      margin-bottom: 5px;
+    }
+    .admin-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    .admin-input:focus {
+      border-color: #f59e0b;
+    }
+    .save-btn {
+      padding: 10px 18px;
+      background: #111827;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Toggle Switch (JioHome Style) */
+    .device-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #f3f4f6;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .device-meta strong {
+      display: block;
+      font-size: 15px;
+      color: #111827;
+    }
+    .device-meta span {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #d1d5db;
+      transition: .3s;
+      border-radius: 28px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #dc2626;
+    }
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    .admin-video-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .del-btn {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. LOGIN / GATEWAY SCREEN -->
+  <div id="login-screen">
+    <div class="brand-title">Lion Studio</div>
+    <div class="lion-logo">🦁</div>
+    <div><span class="hand-pointer">👇</span></div>
+    <div class="prompt-text">यहाँ अपना पासवर्ड डालो</div>
+
+    <input type="password" id="password-field" class="pass-input" placeholder="पासवर्ड दर्ज करें..." />
+    <button class="enter-btn" onclick="handleLogin()">अंदर जाओ</button>
+
+    <div id="error-box" class="error-msg"></div>
+
+    <!-- WhatsApp Support Link (यहाँ अपना नंबर 91 के साथ बदलें) -->
+    <a id="whatsapp-link" href="https://wa.me/7903826635?text=Hello%20Lion%20Studio,%20mujhe%20payment%20aur%20password%20chahiye." target="_blank" class="whatsapp-box">
+      <span>💬</span> Help & WhatsApp Support
+    </a>
+  </div>
+
+  <!-- 2. USER PANEL -->
+  <div id="user-panel" class="panel-container">
+    <div class="topbar">
+      <h2>🦁 Lion Studio</h2>
+      <button class="logout-btn" onclick="logout()">बाहर निकलें</button>
+    </div>
+
+    <div class="tabs">
+      <button id="tab-live" class="tab-btn active" onclick="switchUserTab('live')">🔴 लाइव क्लास</button>
+      <button id="tab-video" class="tab-btn" onclick="switchUserTab('video')">🎬 वीडियो कोर्स</button>
+    </div>
+
+    <!-- Live Section -->
+    <div id="user-live-section" class="live-card">
+      <div id="live-status-badge" class="live-badge live-off">अभी लाइव बंद है</div>
+      <p id="live-desc" style="color:#4b5563; margin-top:8px;">लाइव शुरू होने पर यहाँ जुड़ने का लिंक दिखाई देगा।</p>
+      <a id="user-meet-link" href="#" target="_blank" class="meet-btn" style="display:none;">Google Meet पर जुड़ें</a>
+    </div>
+
+    <!-- Video Section -->
+    <div id="user-video-section" style="display:none;">
+      <div id="user-video-list" class="video-grid"></div>
+    </div>
+  </div>
+
+  <!-- 3. ADMIN PANEL -->
+  <div id="admin-panel" class="panel-container">
+    <div class="topbar">
+      <h2>⚙️ Admin Control</h2>
+      <button class="logout-btn" onclick="logout()">लॉगआउट</button>
+    </div>
+
+    <!-- Password Management -->
+    <div class="admin-section">
+      <h3>🔑 पासवर्ड कंट्रोल (बदलें)</h3>
+      <div class="form-group">
+        <label>नया यूजर पासवर्ड (User Password)</label>
+        <input type="text" id="admin-set-userpass" class="admin-input" />
+      </div>
+      <div class="form-group">
+        <label>नया एडमिन पासवर्ड (Admin Password)</label>
+        <input type="text" id="admin-set-adminpass" class="admin-input" />
+      </div>
+      <button class="save-btn" onclick="updatePasswords()">पासवर्ड सेव करें</button>
+    </div>
+
+    <!-- Live Class Control -->
+    <div class="admin-section">
+      <h3>📡 लाइव क्लास कंट्रोल (Google Meet)</h3>
+      <div class="device-row">
+        <div class="device-meta">
+          <strong>लाइव स्टेटस (अभी लाइव है)</strong>
+          <span>ऑन करने पर यूजर को हरा बैज और लिंक दिखेगा</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="admin-live-toggle" onchange="updateLiveSettings()" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="form-group">
+        <label>Google Meet लिंक डालें</label>
+        <input type="url" id="admin-meet-url" class="admin-input" placeholder="https://meet.google.com/xxx-xxxx-xxx" />
+      </div>
+      <button class="save-btn" onclick="updateLiveSettings()">लाइव लिंक सेव करें</button>
+    </div>
+
+    <!-- Add Videos -->
+    <div class="admin-section">
+      <h3>🎬 नया वीडियो जोड़ें (Vimeo / Bunny Embed Link)</h3>
+      <div class="form-group">
+        <label>वीडियो का टाइटल</label>
+        <input type="text" id="vid-title" class="admin-input" placeholder="जैसे: क्लास 1 - बेसिक जानकारी" />
+      </div>
+      <div class="form-group">
+        <label>थंबनेल फोटो लिंक (Thumbnail URL)</label>
+        <input type="url" id="vid-thumb" class="admin-input" placeholder="https://example.com/image.jpg" />
+      </div>
+      <div class="form-group">
+        <label>वीडियो Embed लिंक (सुरक्षित स्ट्रीमिंग लिंक)</label>
+        <input type="url" id="vid-url" class="admin-input" placeholder="https://player.vimeo.com/video/123456789" />
+      </div>
+      <button class="save-btn" onclick="addVideo()">वीडियो जोड़ें</button>
+
+      <div id="admin-video-list" style="margin-top:15px;"></div>
+    </div>
+
+    <!-- Device Block System -->
+    <div class="admin-section">
+      <h3>📱 डिवाइस ब्लॉक सिस्टम (Connected Devices)</h3>
+      <p style="font-size:13px; color:#6b7280; margin-bottom:12px;">टॉगल ऑन (लाल) करने पर वह डिवाइस यूजर पासवर्ड से ब्लॉक हो जाएगा। एडमिन पासवर्ड हमेशा काम करेगा।</p>
+      <div id="admin-device-list"></div>
+    </div>
+  </div>
+
+  <!-- Secure Video Player Modal (No Download Option) -->
+  <div id="player-modal" oncontextmenu="return false;">
+    <div class="player-box">
+      <button class="close-player" onclick="closePlayer()">बंद करें ✖</button>
+      <div class="iframe-wrap">
+        <iframe id="video-iframe" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Default App Data Initialization
+    const defaultData = {
+      userPass: "lion123",
+      adminPass: "admin786",
+      isLive: false,
+      meetLink: "https://meet.google.com/",
+      videos: [
+        {
+          id: 1,
+          title: "डेमो क्लास - Lion Studio",
+          thumb: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&q=80",
+          url: "https://player.vimeo.com/video/76979871"
+        }
+      ],
+      devices: []
+    };
+
+    function getAppData() {
+      const saved = localStorage.getItem("lionStudioData");
+      if (!saved) {
+        localStorage.setItem("lionStudioData", JSON.stringify(defaultData));
+        return defaultData;
+      }
+      return JSON.parse(saved);
+    }
+
+    function saveAppData(data) {
+      localStorage.setItem("lionStudioData", JSON.stringify(data));
+    }
+
+    // Detect Device Model & ID
+    function getCurrentDevice() {
+      let devId = localStorage.getItem("lionDeviceId");
+      if (!devId) {
+        devId = "DEV-" + Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem("lionDeviceId", devId);
+      }
+
+      const ua = navigator.userAgent;
+      let model = "Unknown Device";
+      if (/iPhone/i.test(ua)) model = "Apple iPhone";
+      else if (/iPad/i.test(ua)) model = "Apple iPad";
+      else if (/Samsung|SM-/i.test(ua)) model = "Samsung Galaxy";
+      else if (/RMX|Realme/i.test(ua)) model = "Realme Smartphone";
+      else if (/Redmi|Xiaomi|M20|M21/i.test(ua)) model = "Redmi / Xiaomi";
+      else if (/Vivo/i.test(ua)) model = "Vivo Smartphone";
+      else if (/Oppo|CPH/i.test(ua)) model = "Oppo Smartphone";
+      else if (/Android/i.test(ua)) model = "Android Device";
+      else if (/Windows/i.test(ua)) model = "Windows PC";
+      else if (/Mac/i.test(ua)) model = "MacBook / Mac";
+
+      return { id: devId, model: model };
+    }
+
+    // Register current device in list
+    function registerDevice() {
+      const data = getAppData();
+      const current = getCurrentDevice();
+      const exists = data.devices.find(d => d.id === current.id);
+      if (!exists) {
+        data.devices.push({
+          id: current.id,
+          model: current.model,
+          blocked: false,
+          lastSeen: new Date().toLocaleTimeString()
+        });
+        saveAppData(data);
+      }
+    }
+    registerDevice();
+
+    // Login Handler (Single Box for User & Admin)
+    function handleLogin() {
+      const inputPass = document.getElementById("password-field").value.trim();
+      const errorBox = document.getElementById("error-box");
+      const data = getAppData();
+      const currentDev = getCurrentDevice();
+      const devRecord = data.devices.find(d => d.id === currentDev.id);
+
+      errorBox.textContent = "";
+
+      if (!inputPass) {
+        errorBox.textContent = "कृपया पासवर्ड डालें!";
+        return;
+      }
+
+      // 1. Check Admin Password First (Always Works Even If Blocked)
+      if (inputPass === data.adminPass) {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("admin-panel").style.display = "block";
+        loadAdminPanel();
+        return;
+      }
+
+      // 2. Check User Password
+      if (inputPass === data.userPass) {
+        if (devRecord && devRecord.blocked) {
+          errorBox.textContent = "🚫 आपका डिवाइस एडमिन द्वारा ब्लॉक कर दिया गया है!";
+          return;
+        }
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("user-panel").style.display = "block";
+        loadUserPanel();
+        return;
+      }
+
+      errorBox.textContent = "गलत ❌पासवर्ड! किसी भी समस्या के लिए Lion Studio 🦁की टीम से WhatsApp सपोर्ट पर संपर्क करें";
+    }
+
+    function logout() {
+      document.getElementById("password-field").value = "";
+      document.getElementById("error-box").textContent = "";
+      document.getElementById("user-panel").style.display = "none";
+      document.getElementById("admin-panel").style.display = "none";
+      document.getElementById("login-screen").style.display = "block";
+    }
+
+    // User Panel Logic
+    function switchUserTab(tab) {
+      document.getElementById("tab-live").classList.remove("active");
+      document.getElementById("tab-video").classList.remove("active");
+      if (tab === "live") {
+        document.getElementById("tab-live").classList.add("active");
+        document.getElementById("user-live-section").style.display = "block";
+        document.getElementById("user-video-section").style.display = "none";
+      } else {
+        document.getElementById("tab-video").classList.add("active");
+        document.getElementById("user-live-section").style.display = "none";
+        document.getElementById("user-video-section").style.display = "block";
+      }
+    }
+
+    function loadUserPanel() {
+      const data = getAppData();
+      const badge = document.getElementById("live-status-badge");
+      const desc = document.getElementById("live-desc");
+      const meetBtn = document.getElementById("user-meet-link");
+
+      if (data.isLive) {
+        badge.textContent = "🟢 अभी लाइव है";
+        badge.className = "live-badge live-on";
+        desc.textContent = "क्लास अभी लाइव चल रही है! नीचे बटन दबाकर सीधे जुड़ें और सवाल पूछें।";
+        meetBtn.href = data.meetLink;
+        meetBtn.style.display = "inline-block";
+      } else {
+        badge.textContent = "अभी लाइव बंद है";
+        badge.className = "live-badge live-off";
+        desc.textContent = "जब लाइव क्लास शुरू होगी, तब यहाँ हरा बटन आ जाएगा।";
+        meetBtn.style.display = "none";
+      }
+
+      const vidGrid = document.getElementById("user-video-list");
+      vidGrid.innerHTML = "";
+      data.videos.forEach(v => {
+        vidGrid.innerHTML += `
+          <div class="video-card">
+            <img src="${v.thumb}" class="video-thumb" alt="Thumbnail" />
+            <div class="video-info">
+              <div class="video-title">${v.title}</div>
+              <button class="watch-btn" onclick="openPlayer('${v.url}')">▶ वीडियो देखें</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function openPlayer(url) {
+      document.getElementById("video-iframe").src = url;
+      document.getElementById("player-modal").style.display = "flex";
+    }
+
+    function closePlayer() {
+      document.getElementById("video-iframe").src = "";
+      document.getElementById("player-modal").style.display = "none";
+    }
+
+    // Admin Panel Logic
+    function loadAdminPanel() {
+      const data = getAppData();
+      document.getElementById("admin-set-userpass").value = data.userPass;
+      document.getElementById("admin-set-adminpass").value = data.adminPass;
+      document.getElementById("admin-live-toggle").checked = data.isLive;
+      document.getElementById("admin-meet-url").value = data.meetLink;
+
+      renderAdminVideos();
+      renderAdminDevices();
+    }
+
+    function updatePasswords() {
+      const data = getAppData();
+      const newUser = document.getElementById("admin-set-userpass").value.trim();
+      const newAdmin = document.getElementById("admin-set-adminpass").value.trim();
+      if (!newUser || !newAdmin) {
+        alert("दोनों पासवर्ड भरना जरूरी है!");
+        return;
+      }
+      data.userPass = newUser;
+      data.adminPass = newAdmin;
+      saveAppData(data);
+      alert("✅ पासवर्ड सफलतापूर्वक बदल दिए गए हैं!");
+    }
+
+    function updateLiveSettings() {
+      const data = getAppData();
+      data.isLive = document.getElementById("admin-live-toggle").checked;
+      data.meetLink = document.getElementById("admin-meet-url").value.trim();
+      saveAppData(data);
+    }
+
+    function addVideo() {
+      const title = document.getElementById("vid-title").value.trim();
+      const thumb = document.getElementById("vid-thumb").value.trim() || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&q=80";
+      const url = document.getElementById("vid-url").value.trim();
+
+      if (!title || !url) {
+        alert("वीडियो का टाइटल और लिंक दोनों डालें!");
+        return;
+      }
+
+      const data = getAppData();
+      data.videos.push({
+        id: Date.now(),
+        title: title,
+        thumb: thumb,
+        url: url
+      });
+      saveAppData(data);
+
+      document.getElementById("vid-title").value = "";
+      document.getElementById("vid-thumb").value = "";
+      document.getElementById("vid-url").value = "";
+      renderAdminVideos();
+    }
+
+    function deleteVideo(id) {
+      const data = getAppData();
+      data.videos = data.videos.filter(v => v.id !== id);
+      saveAppData(data);
+      renderAdminVideos();
+    }
+
+    function renderAdminVideos() {
+      const data = getAppData();
+      const list = document.getElementById("admin-video-list");
+      list.innerHTML = "";
+      data.videos.forEach(v => {
+        list.innerHTML += `
+          <div class="admin-video-item">
+            <span style="font-size:14px; font-weight:600;">${v.title}</span>
+            <button class="del-btn" onclick="deleteVideo(${v.id})">हटाएं</button>
+          </div>
+        `;
+      });
+    }
+
+    function toggleBlockDevice(devId) {
+      const data = getAppData();
+      const dev = data.devices.find(d => d.id === devId);
+      if (dev) {
+        dev.blocked = !dev.blocked;
+        saveAppData(data);
+        renderAdminDevices();
+      }
+    }
+
+    function renderAdminDevices() {
+      const data = getAppData();
+      const devList = document.getElementById("admin-device-list");
+      devList.innerHTML = "";
+      data.devices.forEach(d => {
+        devList.innerHTML += `
+          <div class="device-row">
+            <div class="device-meta">
+              <strong>${d.model} (${d.id})</strong>
+              <span>स्टेटस: ${d.blocked ? '🔴 ब्लॉक है' : '🟢 चालू है'}</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" ${d.blocked ? "checked" : ""} onchange="toggleBlockDevice('${d.id}')" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
